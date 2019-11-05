@@ -5,7 +5,8 @@
             :url "https://www.eclipse.org/legal/epl-2.0/"}
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [ring "1.7.1"]
-                 [ring/ring-json "0.5.0"]]
+                 [ring/ring-json "0.5.0"]
+                 [compojure "1.6.1"]]
   :main ^:skip-aot url-shortener.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}})

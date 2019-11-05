@@ -1,13 +1,22 @@
 (ns url-shortener.core
-  (:require [ring.adapter.jetty :refer [run-jetty]]
+  (:require [ring.adapter.jetty   :refer [run-jetty]]
             [ring.middleware.json :refer [wrap-json-response]]
-            [ring.util.response :refer [response redirect]])
+            [ring.util.response   :refer [response redirect]]
+            [compojure.core       :refer [routes GET POST]]
+            [compojure.route      :refer [not-found]]
+            [compojure.coercions  :refer [as-int]])
   (:gen-class))
 
 
 ;; SPEC
 
 (def uri-regex  #"\w+:(\/?\/?)[^\s]+")
+
+(def number-regex #"^[0-9]*$")
+
+(def short-url-resp {:original_url nil :short_url nil})
+
+(def short-url-err {:error "invalid URL or malformed header"})
 
 
 ;;; STORAGE
@@ -27,6 +36,7 @@
 
 ;; API
 
+
 (defn remove-slash
   [uri]
   (clojure.string/replace uri #"/" ""))
@@ -43,8 +53,13 @@
                    :short_url (shorten-uri uri)})
         (response {:error "invalid URL or malformed header"})))))
 
+(def my-routes
+  (routes
+   (POST "/shorturl"  [address]              (fn [x] (str "REDIRECT TO " address)))
+   (GET  "/:shorturl" [shorturl :<< as-int] #(if (contains? @uris %) ((keyword %) @uris) short-url-err))
+   (not-found {:error "Not found"})))
 
 
 (defn -main
   []
-  (run-jetty (wrap-json-response handler) {:port 3000}))
+  (run-jetty (wrap-json-response my-routes) {:port 3000}))
