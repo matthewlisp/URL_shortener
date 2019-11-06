@@ -9,7 +9,7 @@
   (:gen-class))
 
 
-;; SPEC
+;;;;; SPEC ;;;;;
 
 (def uri-regex  #"\w+:(\/?\/?)[^\s]+")
 
@@ -18,7 +18,8 @@
 (def short-url-err {:error "invalid URL"})
 
 
-;;; STORAGE
+
+;;;;; STORAGE ;;;;;
 
 (def uris (atom {}))
 
@@ -33,7 +34,8 @@
   (let [key (generate-key)
         _ (swap! uris conj {key (redirect uri)})] key))
 
-;; API
+
+;;;;; API ;;;;;
 
 (def my-routes
   (routes
